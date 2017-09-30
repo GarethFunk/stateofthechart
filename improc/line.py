@@ -1,5 +1,5 @@
 
-from small_classes import Connector
+from .small_classes import Connector
 
 class Line:
     """ This class is used to represent lines connecting lines"""

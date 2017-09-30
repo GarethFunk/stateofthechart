@@ -1,6 +1,6 @@
 import uuid
 
-from small_classes import Shape
+from .small_classes import Shape
 
 class Node:
     """This class is used to describe nodes in the flowchart"""
