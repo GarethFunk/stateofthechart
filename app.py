@@ -6,7 +6,7 @@ import time
 import hashlib
 import hmac
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -38,6 +38,10 @@ class Token:
         return serialized
 
 
+def file_to_json(file_path):
+    return "{}"
+
+
 def to_bytes(o):
     return str(o).encode("utf-8")
 
@@ -63,6 +67,18 @@ def homepage():
     return render_template('app.html', token=my_token)
 
 
-app.run(debug=False,
-        host='0.0.0.0',
-        port='5000')
+@app.route('/diagram', methods=['POST'])
+def make_diagram():
+    raw = request.form['data']
+    prefix = "data:image/png;base64,"
+    b64s = raw[len(prefix):]
+
+    file_path = '/tmp/' + uuid.uuid4().hex + ".png";
+    file = open(file_path, 'wb')
+    file.write(base64.b64decode(b64s))
+    file.close()
+
+    return file_to_json(file_path)
+
+
+app.run(debug=False, host='0.0.0.0', port='5000')

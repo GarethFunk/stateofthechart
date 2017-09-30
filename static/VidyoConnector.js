@@ -5,7 +5,22 @@ function ShowRenderer(vidyoConnector) {
 }
 
 function sendChart() {
-    alert("yo");
+    var sourceVid = $("video[data-play-index=0]");
+    var w = sourceVid.outerWidth();
+    var h = sourceVid.outerHeight();
+    var thecanvas = $("<canvas>").attr("width", w).attr("height", h);
+    var context = thecanvas[0].getContext('2d');
+    context.drawImage(sourceVid[0], 0, 0, w, h);
+
+    $.ajax({
+      url: "/diagram",
+      type: "POST",
+      data: {
+        data: thecanvas[0].toDataURL()
+      }
+    }).done(function(diagram) {
+      console.log(diagram);
+    });
 }
 
 // Run StartVidyoConnector when the VidyoClient is successfully loaded
