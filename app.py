@@ -8,6 +8,8 @@ import hmac
 
 from flask import Flask, render_template, request
 
+from improc.improc import convertImageToJSON
+
 app = Flask(__name__)
 
 
@@ -38,8 +40,7 @@ class Token:
         return serialized
 
 
-def file_to_json(file_path):
-    return "{}"
+
 
 
 def to_bytes(o):
@@ -78,7 +79,7 @@ def make_diagram():
     file.write(base64.b64decode(b64s))
     file.close()
 
-    return file_to_json(file_path)
+    return convertImageToJSON(file_path)
 
 
 app.run(debug=False, host='0.0.0.0', port='5000')

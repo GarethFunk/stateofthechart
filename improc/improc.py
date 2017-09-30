@@ -1,11 +1,16 @@
 import json
-
-from flowchart.small_classes import Face
-from flowchart.small_classes import Shape
-from flowchart.line import Line
-from flowchart.node import Node
-from flowchart.fcEncoder import fcEncoder
-
+if __name__ == '__main__':
+    from flowchart.small_classes import Face
+    from flowchart.small_classes import Shape
+    from flowchart.line import Line
+    from flowchart.node import Node
+    from flowchart.fcEncoder import fcEncoder
+else:
+    from .flowchart.small_classes import Face
+    from .flowchart.small_classes import Shape
+    from .flowchart.line import Line
+    from .flowchart.node import Node
+    from .flowchart.fcEncoder import fcEncoder
 
 def convertImageToJSON(filepath = ""):
     #input = cv2.imread(filepath)
