@@ -4,6 +4,7 @@ from flowchart.small_classes import Face
 from flowchart.small_classes import Shape
 from flowchart.line import Line
 from flowchart.node import Node
+from flowchart.fcEncoder import fcEncoder
 
 
 def convertImageToJSON(filepath = ""):
@@ -21,11 +22,15 @@ def convertImageToJSON(filepath = ""):
     lines = []
     lines.append(Line(nodes[0], Face.bottom, nodes[1], Face.top, text="YeSsIr"))
     # Aggregate objects
-    flowchart = [nodes, lines]
+    flowchart = { 'nodes': []}
     # Convert to JSON
     #print(json.dumps(flowchart))
 
-    return flowchart
 
-a = convertImageToJSON("")
-print(a)
+    print(json.dumps(nodes, cls=fcEncoder))
+
+
+    return nodes
+
+a = convertImageToJSON(filepath = "")
+
