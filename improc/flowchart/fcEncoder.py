@@ -1,6 +1,6 @@
 import json
 
-class encoder(json.JSONENcoder):
+class fcEncoder(json.JSONENcoder):
     def default(self, obj):
         if isinstance(obj, complex):
             return [obj.real, obj.imag]
