@@ -12,8 +12,8 @@ class Node:
 
     def __init__(self, shape, pos, size, text = ""):
         self.shape = shape
-        self.pos = pos
-        self.size = size
+        self.pos = pos      # tuple (x, y)
+        self.size = size    # tuple (w, h)
         self.text = text
         self.uid = uuid.uuid4()
 
