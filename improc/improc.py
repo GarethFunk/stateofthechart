@@ -1,13 +1,13 @@
-import numpy as np
+import json
 
-import cv2
+from flowchart.small_classes import Face
+from flowchart.small_classes import Shape
+from flowchart.line import Line
+from flowchart.node import Node
 
-from .node import Node
-from .line import Line
 
-
-def convertImageToJSON(filepath):
-    input = cv2.imread(filepath)
+def convertImageToJSON(filepath = ""):
+    #input = cv2.imread(filepath)
     # Perform thresholding and binarisation
 
     # Extract shape data
@@ -15,9 +15,17 @@ def convertImageToJSON(filepath):
     # Extract text subimages and process
 
     # Create objects
-
+    nodes = []
+    nodes.append(Node(Shape.terminus, (50, 10), (20, 10), "start"))
+    nodes.append(Node(Shape.rectangle, (50,50), (25, 10), "do shit"))
+    lines = []
+    lines.append(Line(nodes[0], Face.bottom, nodes[1], Face.top, text="YeSsIr"))
+    # Aggregate objects
+    flowchart = [nodes, lines]
     # Convert to JSON
+    #print(json.dumps(flowchart))
 
+    return flowchart
 
-    return
-
+a = convertImageToJSON("")
+print(a)
