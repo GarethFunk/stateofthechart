@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VidyoConnector</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script>if (window.module) module = window.module;</script>
+
+    <!-- We've provide some simple styling to get you started. -->
+    <link href="/static/VidyoConnector.css" rel="stylesheet" type="text/css">
+
+    <!-- Here we load the application which knows how to
+    invoke the VidyoConnector API. -->
+    <script type="text/javascript">
+        var vidyo_host = "prod.vidyo.io";
+        var vidyo_resource = "shared_room";
+        var vidyo_token = "{{token}}";
+
+    </script>
+    <script src="/static/VidyoConnector.js"></script>
+    <script type="text/javascript">
+	function onVidyoClientLoaded(status) {
+		console.log("Status: " + status.state + "Description: " + status.description);
+		switch (status.state) {
+			case "READY":    // The library is operating normally
+				$("#connectionStatus").html("Ready to Connect");
+				// After the VidyoClient is successfully initialized a global VC object will become available
+				// All of the VidyoConnector gui and logic is implemented in VidyoConnector.js
+				StartVidyoConnector(VC, VCUtils.params.webrtc);
+				break;
+			case "RETRYING": // The library operating is temporarily paused
+				$("#connectionStatus").html("Temporarily unavailable retrying in " + status.nextTimeout/1000 + " seconds");
+				break;
+			case "FAILED":   // The library operating has stopped
+				ShowFailed(status);
+				$("#connectionStatus").html("Failed: " + status.description);
+				break;
+			case "FAILEDVERSION":   // The library operating has stopped
+				$("#connectionStatus").html("Failed: " + status.description);
+				break;
+			case "NOTAVAILABLE": // The library is not available
+				$("#connectionStatus").html(status.description);
+				break;
+		}
+		return true; // Return true to reload the plugins if not available
+	}
+	function ShowFailed(status) {
+		var helperText = '';
+		 // Display the error
+		helperText += '<h2>An error occurred, please reload</h2>';
+		helperText += '<p>' + status.description + '</p>';
+
+		$("#failedText").html(helperText);
+		$("#failed").removeClass("hidden");
+	}
+
+	function loadVidyoClientLibrary(webrtc, plugin) {
+		// If webrtc, then set webrtcLogLevel
+		var webrtcLogLevel = "";
+		if (webrtc) {
+			// Set the WebRTC log level to either: 'info' (default), 'error', or 'none'
+			webrtcLogLevel = '&webrtcLogLevel=info';
+		}
+
+		//We need to ensure we're loading the VidyoClient library and listening for the callback.
+		var script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.src = 'https://static.vidyo.io/4.1.16.8/javascript/VidyoClient/VidyoClient.js?onload=onVidyoClientLoaded&webrtc=' + webrtc + '&plugin=' + plugin + webrtcLogLevel;
+		document.getElementsByTagName('head')[0].appendChild(script);
+	}
+
+	// Runs when the page loads
+	$(function() {
+		$("#monitorShareParagraph").addClass("hidden");
+		loadVidyoClientLibrary(true, false);
+	});
+
+    </script>
+</head>
+
+<!-- We execute the VidyoConnectorApp library on page load
+to hook up all of the events to elements. -->
+<body id="vidyoConnector">
+<!-- This button toggles the visibility of the options. -->
+<button id="optionsVisibilityButton" title="Toggle Options"
+        class="optionsVisibiliyButtonElements hideOptions hidden"></button>
+
+<div id="options" class="hidden">
+    <img class="logo" src="/static/img/logo.png"/>
+
+    <form>
+        <div id="optionsParameters">
+            <p>
+                <!-- This is the display name that other users will see.
+                -->
+                <label for="displayName">Display Name</label>
+                <input id="displayName" type="text" placeholder="Display Name" value="Guest">
+            </p>
+            <p>
+                <!-- On page load, this input is filled with a list of all the available cameras on the user's system. -->
+                <label for="cameras">Camera</label>
+                <select id="cameras">
+                    <option value='0'>None</option>
+                </select>
+            </p>
+            <p>
+                <!-- On page load, this input is filled with a list of all the available microphones on the user's system. -->
+                <label for="microphones">Microphone</label>
+                <select id="microphones">
+                    <option value='0'>None</option>
+                </select>
+            </p>
+            <p>
+                <!-- On page load, this input is filled with a list of all the available microphones on the user's system. -->
+                <label for="speakers">Speaker</label>
+                <select id="speakers">
+                    <option value='0'>None</option>
+                </select>
+            </p>
+        </div>
+    </form>
+    <div id="messages">
+        <!-- All Vidyo-related messages will be inserted into these spans. -->
+        <span id="error"></span>
+    </div>
+</div>
+<!-- This is the div into which the Vidyo component will be inserted. -->
+<div id="renderer" class="rendererWithOptions pluginOverlay hidden">
+</div>
+<div id="toolbarLeft" class="toolbar">
+    <span id="participantStatus"></span>
+</div>
+<div id="toolbarCenter" class="toolbar">
+    <!-- This button toggles the camera privacy on or off. -->
+    <button id="cameraButton" title="Camera Privacy" class="toolbarButton cameraOn"></button>
+
+    <!-- This button joins and leaves the conference. -->
+    <button id="joinLeaveButton" title="Join Conference" class="toolbarButton callStart"></button>
+
+    <!-- This button mutes and unmutes the users' microphone. -->
+    <button id="microphoneButton" title="Microphone Privacy" class="toolbarButton microphoneOn"></button>
+
+    <!-- This button does the thang! -->
+    <button id="chartButton" title="Send Diagram" class="toolbarButton sendChart"></button>
+</div>
+<div id="toolbarRight" class="toolbar">
+    <span id="connectionStatus">Initializing</span>
+    <span id="clientVersion">TADHACK 2017</span>
+</div>
+<div id="failed" class="hidden">
+    <table>
+        <tr>
+            <td><img class="logo" src="/static/img/logo.png"/></td>
+        </tr>
+        <tr>
+            <td id="failedText">Error</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
