@@ -27,10 +27,10 @@ def convertImageToJSON(filepath = ""):
     #print(json.dumps(flowchart))
 
 
-    print(json.dumps(nodes, cls=fcEncoder))
+    output = json.dumps(nodes, cls=fcEncoder)
 
 
-    return nodes
+    return output
 
-a = convertImageToJSON(filepath = "")
+
 
