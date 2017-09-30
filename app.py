@@ -40,9 +40,6 @@ class Token:
         return serialized
 
 
-
-
-
 def to_bytes(o):
     return str(o).encode("utf-8")
 

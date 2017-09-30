@@ -4,10 +4,121 @@ function ShowRenderer(vidyoConnector) {
     vidyoConnector.ShowViewAt("renderer", rndr.offsetLeft, rndr.offsetTop, rndr.offsetWidth, rndr.offsetHeight);
 }
 
+function getNode(id, nodes) {
+
+    var out = -1;
+    $.each(nodes, function(i) {
+        if (nodes[i].UID === id) {
+            out =  nodes[i];
+            return true;
+        }
+    });
+
+    return out;
+}
+
+function drawCrap() {
+    var crap = {nodes: [{shape: "terminus", pos: {x: 10, y: 10}, size: {w: 20, h: 10}, text: "start", UID: "1ad46ba6b7dc452bb74309187972c67f"}, {shape: "rectangle", pos: {x: 50, y: 50}, size: {w: 25, h: 10}, text: "do shit", UID: "3e235776abd2416d9396caaf40a9e212"}], "lines": [{startCon: {node: "1ad46ba6b7dc452bb74309187972c67f", face: "bottom", pos: 10.0}, endCon: {node: "3e235776abd2416d9396caaf40a9e212", face: "top", pos: 12.5}, kinkPoints: [], text: "YeSsIr"}]};
+
+    /* {startCon: {node: "1ad46ba6b7dc452bb74309187972c67f", face: "bottom", pos: 10.0},
+        endCon: {node: "3e235776abd2416d9396caaf40a9e212", face: "top", pos: 12.5},
+        kinkPoints: [],
+        text: "YeSsIr"} */
+
+    var canvas = new fabric.Canvas('wbCanvas');
+
+    var sf = 6;
+
+    $.each(crap.lines, function(i) {
+        var line = crap.lines[i];
+
+        var startNode = getNode(line.startCon.node, crap.nodes);
+        var endNode = getNode(line.endCon.node, crap.nodes);
+
+        startX = -1;
+        startY = -1;
+        if (startNode !== -1) {
+            if (line.startCon.face === "top") {
+                startY = (startNode.pos.y - startNode.size.h/2);
+                startX = (startNode.pos.x - startNode.size.w/2) + line.startCon.pos;
+            } else if(line.startCon.face === "left") {
+                startY = (startNode.pos.y - startNode.size.h/2) + line.startCon.pos;
+                startX = (startNode.pos.x - startNode.size.w/2);
+            } else if(line.startCon.face === "right") {
+                startY = (startNode.pos.y - startNode.size.h/2) + line.startCon.pos;
+                startX = (startNode.pos.x - startNode.size.w/2) + startNode.size.w;
+            } else {
+                startY = (startNode.pos.y - startNode.size.h/2) + startNode.size.h;
+                startX = (startNode.pos.x - startNode.size.w/2) + line.startCon.pos;
+            }
+        }
+
+        endX = -1;
+        endY = -1;
+        if (endNode !== -1) {
+            if (line.endCon.face === "top") {
+                endY = (endNode.pos.y - endNode.size.h/2);
+                endX = (endNode.pos.x - endNode.size.w/2) + line.endCon.pos;
+            } else if(line.endCon.face === "left") {
+                endY = (endNode.pos.y - endNode.size.h/2) + line.endCon.pos;
+                endX = (endNode.pos.x - endNode.size.w/2);
+            } else if(line.endCon.face === "right") {
+                endY = (endNode.pos.y - endNode.size.h/2) + line.endCon.pos;
+                endX = (endNode.pos.x - endNode.size.w/2) + endNode.size.w;
+            } else {
+                endY = (endNode.pos.y - endNode.size.h/2)+ endNode.size.h;
+                endX = (endNode.pos.x - endNode.size.w/2) + line.endCon.pos;
+            }
+        }
+
+        if (startX != -1 && startY != -1 && endX != -1 && endY != -1) {
+
+            var line = new fabric.Line([ startX * sf, startY * sf, endX * sf, endY * sf ], {
+                          fill: 'black',
+                          stroke: 'black',
+                          strokeWidth: 3,
+                          selectable: true
+                        });
+
+            canvas.add(line);
+
+        }
+    });
+
+
+    $.each(crap.nodes, function(i) {
+        var node = crap.nodes[i];
+
+        var rect = new fabric.Rect({
+            left: (node.pos.x - node.size.w/2) * sf,
+            top: (node.pos.y - node.size.h/2) * sf,
+            fill: 'rgba(0,0,0,0)',
+            stroke: 'black',
+            width: node.size.w * sf,
+            height: node.size.h * sf,
+            hasRotatingPoint: false
+        });
+
+        canvas.add(rect);
+
+        var text = new fabric.Text(node.text, {
+            left:  node.pos.x * sf,
+            top: node.pos.y * sf,
+            fontFamily: "sans-serif",
+            fontSize: 24,
+            textAlign: 'center',
+            originY: 'center',
+            originX: 'center'
+        });
+        canvas.add(text);
+    });
+
+}
+
 function sendChart() {
     var sourceVid = $("video[data-play-index=0]");
-    var w = sourceVid.outerWidth();
-    var h = sourceVid.outerHeight();
+    var w = 1280;
+    var h = 720;
     var thecanvas = $("<canvas>").attr("width", w).attr("height", h);
     var context = thecanvas[0].getContext('2d');
     context.drawImage(sourceVid[0], 0, 0, w, h);

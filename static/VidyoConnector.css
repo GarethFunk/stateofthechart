@@ -205,3 +205,19 @@ html, body {
 	background-position: center;
 	background-size: 33%;
 }
+
+
+#whiteboard {
+ width: 30vw;
+ position: absolute;
+ top: 2vh;
+ right: 2vh;
+ bottom: CALC(2vh + 58px);
+ background-color: #FFFFFF;
+ z-index: 1000;
+}
+
+#wbCanvas {
+    width: 100%;
+    height: 100%;
+}
