@@ -9,11 +9,11 @@ class fcEncoder(json.JSONEncoder):
         if isinstance(obj, Node):
             return {"shape":obj.shape, "pos":{"x":obj.pos[0], "y":obj.pos[1]}, "size":{"w":obj.size[0], "h":obj.size[1]}, "text":obj.text, "UID":obj.uid}
         elif isinstance(obj, Line):
-            return {"startCon"}
+            return {"startCon":obj.startCon, "endCon":obj.endCon, "kinkPoints":obj.kinkPoints, "text":obj.text}
         elif isinstance(obj, Connector):
-            return
+            return {"node":obj.node.uid, "face":obj.face, "pos":obj.pos}
         elif isinstance(obj, Face):
-            return
+            return obj.name
         elif isinstance(obj, Shape):
             return obj.name
         elif isinstance(obj, uuid.UUID):

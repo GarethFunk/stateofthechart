@@ -20,6 +20,8 @@ def convertImageToJSON(filepath = ""):
 
     # Extract text subimages and process
 
+
+
     # Create objects
     nodes = []
     nodes.append(Node(Shape.terminus, (50, 10), (20, 10), "start"))
@@ -27,15 +29,13 @@ def convertImageToJSON(filepath = ""):
     lines = []
     lines.append(Line(nodes[0], Face.bottom, nodes[1], Face.top, text="YeSsIr"))
     # Aggregate objects
-    flowchart = { 'nodes': []}
+    flowchart = { "nodes":nodes, "lines":lines}
     # Convert to JSON
-    #print(json.dumps(flowchart))
-
-
-    output = json.dumps(nodes, cls=fcEncoder)
-
+    output = json.dumps(flowchart, cls=fcEncoder)
 
     return output
 
 
-
+if __name__ == '__main__':
+    op = convertImageToJSON(filepath="")
+    print(op)
