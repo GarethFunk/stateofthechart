@@ -4,19 +4,15 @@ except ImportError:
     from PIL import Image
 import pytesseract
 from unidecode import unidecode
-import enchant
 import re
 
+#text = unidecode(pytesseract.image_to_string(Image.open('../tests/text_imgs/1.png')))
 
-text = unidecode(pytesseract.image_to_string(Image.open('../tests/text_imgs/1.png')))
+#text = text.lower()
 
-text = text.lower()
-
-#text = unidecode("Sta rt my Fl ow Cha rt".lower()) #test string
+text = unidecode("te st text".lower()) #test string
 
 text = re.sub("(^|\W)\d+($|\W)", " ", text) #removes numbers from the string
-
-d = enchant.Dict("en_US")
 
 words = text.split()
 
@@ -41,6 +37,11 @@ for i in range(l):
 
 '''
 #code for US dictionary - very liberal with word inclusions
+
+import enchant
+
+d = enchant.Dict("en_US")
+
 for i in range(l):
     if i not in marker:
         if d.check(words[i]) is True or i == l - 1:
