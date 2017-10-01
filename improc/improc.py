@@ -82,8 +82,9 @@ def convertImageToJSON(filepath):
         y = rect[1]
         w = rect[2]
         h = rect[3]
-        d = 0.150 #indent
-        ocr_input = static_input[int(y+(h*d)):int(y+(h*(1-d))), int(x+(d*w)):int(x+(w*(1-d)))]
+        d = 0.07 #indent
+        b = 0.12
+        ocr_input = static_input[int(y+(h*b)):int(y+(h*(1-b))), int(x+(d*w)):int(x+(w*(1-d)))]
         kernel = np.ones((3, 3), np.uint8)
         #ocr_input = cv2.cvtColor(ocr_input, cv2.COLOR_BGR2RGB)
         if __name__ == '__main__':
