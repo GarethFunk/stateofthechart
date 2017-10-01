@@ -73,10 +73,21 @@ def convertImageToJSON(filepath):
             arrows_conts.append([x, y, w, h])
             cv2.drawContours(ip, contour, -1, (0, 255, 255), 1)
     # Now we have distinguished between arrows and rectangles
+    print(rect_conts)
+    print(arrows_conts)
     cv2.imshow("contours", ip)
-    cv2.waitKey(0)
+    cv2.waitKey(1000)
     # Create objects
     nodes = []
+    for rect in rect_conts:
+        # Extract the text. Assume text is contained within a 90% size bounding rectangle
+        x = rect[0]
+        y = rect[1]
+        w = rect[2]
+        h = rect[3]
+        ocr_input = th3[y:y+h, x:x+w]
+
+        nodes.append(Node(Shape.rectangle, (x, y), (w, h), "test"))
     nodes.append(Node(Shape.terminus, (50, 10), (20, 10), "start"))
     nodes.append(Node(Shape.rectangle, (50,50), (25, 10), "do shit"))
     lines = []
