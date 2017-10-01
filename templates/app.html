@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>VidyoConnector</title>
+    <title>State of the Chart</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -79,9 +79,16 @@
 	$(function() {
 		$("#monitorShareParagraph").addClass("hidden");
 		loadVidyoClientLibrary(true, false);
-		$("#wbCanvas").attr("width", $("#wbCanvas").outerWidth() * 2);
-		$("#wbCanvas").attr("height", $("#wbCanvas").outerHeight() * 2);
-		drawCrap();
+		$("#whiteboardBtn").click(function() {
+		    if ($("#whiteboard").css('display') === 'none') {
+		        $("#whiteboard").show();
+		        $("#whiteboardBtn img").attr('src', '/static/img/closeWhiteboard.png');
+		    } else {
+		        $("#whiteboard").hide();
+		        $("#whiteboardBtn img").attr('src', '/static/img/showWhiteboard.png');
+		    }
+		});
+
 	});
 
     </script>
@@ -139,6 +146,10 @@ to hook up all of the events to elements. -->
 <div id="whiteboard">
     <canvas id="wbCanvas">
     </canvas>
+</div>
+
+<div id="whiteboardBtn">
+    <img src="/static/img/showWhiteboard.png"/>
 </div>
 
 <div id="toolbarLeft" class="toolbar">

@@ -17,15 +17,14 @@ function getNode(id, nodes) {
     return out;
 }
 
-function drawCrap() {
-    var crap = {nodes: [{shape: "terminus", pos: {x: 10, y: 10}, size: {w: 20, h: 10}, text: "start", UID: "1ad46ba6b7dc452bb74309187972c67f"}, {shape: "rectangle", pos: {x: 50, y: 50}, size: {w: 25, h: 10}, text: "do shit", UID: "3e235776abd2416d9396caaf40a9e212"}], "lines": [{startCon: {node: "1ad46ba6b7dc452bb74309187972c67f", face: "bottom", pos: 10.0}, endCon: {node: "3e235776abd2416d9396caaf40a9e212", face: "top", pos: 12.5}, kinkPoints: [], text: "YeSsIr"}]};
+function drawCrap(crap) {
 
-    /* {startCon: {node: "1ad46ba6b7dc452bb74309187972c67f", face: "bottom", pos: 10.0},
-        endCon: {node: "3e235776abd2416d9396caaf40a9e212", face: "top", pos: 12.5},
-        kinkPoints: [],
-        text: "YeSsIr"} */
-
+    $("#whiteboard").show();
+    $("#whiteboardBtn img").attr('src', '/static/img/closeWhiteboard.png');
+    $("#wbCanvas").attr("width", $("#wbCanvas").outerWidth() * 2);
+    $("#wbCanvas").attr("height", $("#wbCanvas").outerHeight() * 2);
     var canvas = new fabric.Canvas('wbCanvas');
+    canvas.on("after:render", function(opt){ shareCanvas(canvas.toObject()); });
 
     var sf = 6;
 
@@ -112,7 +111,11 @@ function drawCrap() {
         });
         canvas.add(text);
     });
+}
 
+function shareCanvas(canvas) {
+    //canvas.loadFromJSON("{\"version\":\"2.0.0-beta7\",\"objects\":[{\"type\":\"line\",\"version\":\"2.0.0-beta7\",\"originX\":\"left\",\"originY\":\"top\",\"left\":300,\"top\":90,\"width\":0,\"height\":180,\"fill\":\"black\",\"stroke\":\"black\",\"strokeWidth\":3,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeLineJoin\":\"miter\",\"strokeMiterLimit\":10,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"clipTo\":null,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"globalCompositeOperation\":\"source-over\",\"transformMatrix\":null,\"skewX\":0,\"skewY\":0,\"x1\":0,\"x2\":0,\"y1\":-90,\"y2\":90},{\"type\":\"rect\",\"version\":\"2.0.0-beta7\",\"originX\":\"left\",\"originY\":\"top\",\"left\":240,\"top\":30,\"width\":120,\"height\":60,\"fill\":\"rgba(0,0,0,0)\",\"stroke\":\"black\",\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeLineJoin\":\"miter\",\"strokeMiterLimit\":10,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"clipTo\":null,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"globalCompositeOperation\":\"source-over\",\"transformMatrix\":null,\"skewX\":0,\"skewY\":0,\"rx\":0,\"ry\":0},{\"type\":\"text\",\"version\":\"2.0.0-beta7\",\"originX\":\"center\",\"originY\":\"center\",\"left\":300,\"top\":60,\"width\":46.66,\"height\":27.12,\"fill\":\"rgb(0,0,0)\",\"stroke\":null,\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeLineJoin\":\"miter\",\"strokeMiterLimit\":10,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"clipTo\":null,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"globalCompositeOperation\":\"source-over\",\"transformMatrix\":null,\"skewX\":0,\"skewY\":0,\"text\":\"start\",\"fontSize\":24,\"fontWeight\":\"normal\",\"fontFamily\":\"sans-serif\",\"fontStyle\":\"normal\",\"lineHeight\":1.16,\"underline\":false,\"overline\":false,\"linethrough\":false,\"textAlign\":\"center\",\"textBackgroundColor\":\"\",\"charSpacing\":0,\"styles\":{}},{\"type\":\"rect\",\"version\":\"2.0.0-beta7\",\"originX\":\"left\",\"originY\":\"top\",\"left\":225,\"top\":270,\"width\":150,\"height\":60,\"fill\":\"rgba(0,0,0,0)\",\"stroke\":\"black\",\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeLineJoin\":\"miter\",\"strokeMiterLimit\":10,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"clipTo\":null,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"globalCompositeOperation\":\"source-over\",\"transformMatrix\":null,\"skewX\":0,\"skewY\":0,\"rx\":0,\"ry\":0},{\"type\":\"text\",\"version\":\"2.0.0-beta7\",\"originX\":\"center\",\"originY\":\"center\",\"left\":300,\"top\":300,\"width\":70.7,\"height\":27.12,\"fill\":\"rgb(0,0,0)\",\"stroke\":null,\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeLineJoin\":\"miter\",\"strokeMiterLimit\":10,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"clipTo\":null,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"globalCompositeOperation\":\"source-over\",\"transformMatrix\":null,\"skewX\":0,\"skewY\":0,\"text\":\"do shit\",\"fontSize\":24,\"fontWeight\":\"normal\",\"fontFamily\":\"sans-serif\",\"fontStyle\":\"normal\",\"lineHeight\":1.16,\"underline\":false,\"overline\":false,\"linethrough\":false,\"textAlign\":\"center\",\"textBackgroundColor\":\"\",\"charSpacing\":0,\"styles\":{}}]}");
+    console.log(canvas);
 }
 
 function sendChart() {
@@ -130,7 +133,7 @@ function sendChart() {
         data: thecanvas[0].toDataURL()
       }
     }).done(function(diagram) {
-      console.log(diagram);
+      drawCrap(JSON.parse(diagram));
     });
 }
 
