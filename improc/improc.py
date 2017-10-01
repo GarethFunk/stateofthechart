@@ -44,11 +44,9 @@ def convertImageToJSON(filepath):
     cv2.drawContours(ip, contours, -1, (0, 255, 0), 1)
     # Extract text subimages and process
     # Neglect first hierarchy, go to first child of outer contour
-    print(hierarchy)
     outers = []
     pointer =   hierarchy[0, 0, 2]
     while(pointer != -1):
-        print(pointer)
         outers.append(contours[pointer])
         pointer = hierarchy[0, pointer, 0]
 
@@ -186,9 +184,6 @@ def convertImageToJSON(filepath):
                     if dist < 0:
                         dist = 100000000
                     l1_end.append(dist + abs(y - node.pos[1]))
-            for node in nodes:
-                l1_start.append(abs(start - node.pos[1]) + abs(x - node.pos[0]))
-                l1_end.append(abs(end - node.pos[1]) + abs(x - node.pos[0]))
         # Find shortest distances
         startnode = nodes[np.argmin(l1_start)]
         endnode = nodes[np.argmin(l1_end)]
