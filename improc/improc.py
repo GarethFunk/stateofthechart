@@ -26,13 +26,13 @@ def convertImageToJSON(filepath):
     img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     # increase V to make brighter
-    img[:,:,2] = np.multiply(img[:,:,2], 1)
+    img[:,:,2] += 70
     img = cv2.cvtColor(img, cv2.COLOR_HSV2BGR)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Perform thresholding and binarisation
     # Otsu's thresholding after Gaussian filtering
     blur = cv2.GaussianBlur(img, (3, 3), 0)
-    ret3, th3 = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    ret3, th3 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
     kernel = np.ones((5, 5), np.uint8)
     th3 = cv2.erode(th3, kernel, iterations=1)
     th3 = cv2.dilate(th3, kernel, iterations = 1)
@@ -68,7 +68,10 @@ def convertImageToJSON(filepath):
             cv2.drawContours(ip, contour, -1, (255, 255, 0), 1)
         else:
             # it is an arrow
-            arrows_conts.append([x, y, w, h])
+            M = cv2.moments(contour)
+            cx = int(M['m10'] / M['m00'])
+            cy = int(M['m01'] / M['m00'])
+            arrows_conts.append([x, y, w, h, cx, cy])
             cv2.drawContours(ip, contour, -1, (0, 255, 255), 1)
     # Now we have distinguished between arrows and rectangles
     # Create objects
@@ -79,9 +82,13 @@ def convertImageToJSON(filepath):
         y = rect[1]
         w = rect[2]
         h = rect[3]
-        d = 0.10 #indent
-        ocr_input = th3[int(y+(h*d)):int(y+(h*(1-d))), int(x+(d*w)):int(x+(w*(1-d)))]
+        d = 0.150 #indent
+        ocr_input = img[int(y+(h*d)):int(y+(h*(1-d))), int(x+(d*w)):int(x+(w*(1-d)))]
+        kernel = np.ones((3, 3), np.uint8)
         ocr_input = cv2.cvtColor(ocr_input, cv2.COLOR_GRAY2RGB)
+        if __name__ == '__main__':
+            cv2.imshow("text", ocr_input)
+            cv2.waitKey(0)
         ocr_input = Image.fromarray(ocr_input)
         text = ocr(ocr_input)
         if len(text) == 0:
@@ -91,7 +98,41 @@ def convertImageToJSON(filepath):
         print(text)
         nodes.append(Node(Shape.rectangle, (x+(w/2), y+(h/2)), (w, h), text))
     lines = []
-    lines.append(Line(nodes[0], Face.bottom, nodes[1], Face.top, text="YeSsIr"))
+    for line in arrows_conts:
+        x = line[0]
+        y = line[1]
+        w = line[2]
+        h = line[3]
+        x += w/2
+        y += h/2
+        cx = line[4]
+        cy = line[5]
+        # Determine start node and end node
+        if w > h:
+            # The arrow points is horizontal
+            length = w
+            if cx > x:
+                # Arrow head is on the right
+                startFace = Face(left)
+                endFace = Face(right)
+            else:
+                # Arrow head is on the left
+                startFace = Face(right)
+                endFace = Face(left)
+        else:
+            # The arrow is vertical
+            length = h
+            if cy > y:
+                # Arrow points down
+                startFace = Face(bottom)
+                endFace = Face(top)
+            else:
+                # Arrow points up
+                startFace = Face(top)
+                endFace = Face(bottom)
+        # Determine which is the arrowhead end
+        l1 = np.infty
+
     # Aggregate objects
     flowchart = { "nodes":nodes, "lines":lines}
     # Convert to JSON
@@ -102,11 +143,13 @@ def convertImageToJSON(filepath):
         cv2.imshow("edges", edges)
         cv2.waitKey(10)
         cv2.imshow("contours", ip)
-        cv2.waitKey(10)
+        cv2.waitKey(0)
     return output
 
 
 if __name__ == '__main__':
-    op = convertImageToJSON(filepath="../tests/flowchart_images/take2.png")
+    op = convertImageToJSON(filepath="../tests/flowchart_images/newtest.jpg")
     print(op)
     cv2.destroyAllWindows()
+    quit()
+
