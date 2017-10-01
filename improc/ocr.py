@@ -8,6 +8,11 @@ import re
 from string import digits
 import string
 
+#reads a text file of words and returns a list of all the words
+def read_words(words_file):
+    return [word for line in open(words_file, 'r') for word in line.split()]
+
+#takes an image and returns handwritten text within the image, if unable to read, returns "UNABLE TO READ"
 def ocr(image):
     text = unidecode(pytesseract.image_to_string(image))
 
@@ -24,9 +29,6 @@ def ocr(image):
     l = len(words)
     marker = []
 
-    def read_words(words_file):
-        return [word for line in open(words_file, 'r') for word in line.split()]
-
     eng_dict = read_words('../tests/words/google-10000-english-no-swears.txt')
 
     for i in range(l):
@@ -40,7 +42,7 @@ def ocr(image):
                 else: cleanedwords.append(words[i])
 
     '''
-    #code for US dictionary - very liberal with word inclusions
+    #code using US dictionary - very liberal with word inclusions
     
     import enchant 
     
@@ -66,7 +68,7 @@ def ocr(image):
         return text
 
 if __name__ == '__main__':
-    image = Image.open('../tests/flowchart_images/two_boxes.png')
+    image = Image.open('../tests/flowchart_images/take2.png')
 
     text = ocr(image)
     print(text)
