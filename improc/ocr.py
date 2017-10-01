@@ -62,5 +62,5 @@ def ocr(image):
 if __name__ == '__main__':
     image = Image.open('../tests/text_imgs/7.png')
 
-text = ocr(image)
-print(text)
+    text = ocr(image)
+    print(text)
