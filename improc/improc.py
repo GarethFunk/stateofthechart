@@ -1,4 +1,5 @@
 import json
+import copy
 
 import cv2
 import numpy as np
@@ -22,6 +23,7 @@ else:
 
 def convertImageToJSON(filepath):
     ip = cv2.imread(filepath)
+    static_input = copy.deepcopy(ip)
     img = cv2.cvtColor(ip, cv2.COLOR_BGR2GRAY)
     img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -83,9 +85,9 @@ def convertImageToJSON(filepath):
         w = rect[2]
         h = rect[3]
         d = 0.150 #indent
-        ocr_input = img[int(y+(h*d)):int(y+(h*(1-d))), int(x+(d*w)):int(x+(w*(1-d)))]
+        ocr_input = static_input[int(y+(h*d)):int(y+(h*(1-d))), int(x+(d*w)):int(x+(w*(1-d)))]
         kernel = np.ones((3, 3), np.uint8)
-        ocr_input = cv2.cvtColor(ocr_input, cv2.COLOR_GRAY2RGB)
+        #ocr_input = cv2.cvtColor(ocr_input, cv2.COLOR_BGR2RGB)
         if __name__ == '__main__':
             cv2.imshow("text", ocr_input)
             cv2.waitKey(0)
@@ -114,25 +116,40 @@ def convertImageToJSON(filepath):
             if cx > x:
                 # Arrow head is on the right
                 startFace = Face.left
+                start = x - (w/2)
                 endFace = Face.right
+                end = x + (w/2)
             else:
                 # Arrow head is on the left
                 startFace = Face.right
+                start = x + (w/2)
                 endFace = Face.left
+                end = x - (w/2)
+            node_pos = []
+            for node in nodes:
+                node_pos.append(node.pos[0])
         else:
             # The arrow is vertical
             length = h
             if cy > y:
                 # Arrow points down
                 startFace = Face.bottom
+                start = y - (h/2)
                 endFace = Face.top
+                end = y + (h/2)
             else:
                 # Arrow points up
                 startFace = Face.top
+                start = y + (h/2)
                 endFace = Face.bottom
-        # Determine which is the arrowhead end
-        l1 = np.infty
-
+                end = y - (h/2)
+            node_pos = []
+            for node in nodes:
+                node_pos.append(node.pos[1])
+        # Find shortest distances
+        print(node_pos)
+        print(start)
+        print(end)
     # Aggregate objects
     flowchart = { "nodes":nodes, "lines":lines}
     # Convert to JSON
