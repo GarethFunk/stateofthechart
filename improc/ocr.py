@@ -39,7 +39,7 @@ def ocr(image):
     '''
     #code for US dictionary - very liberal with word inclusions
     
-    import enchant
+    import enchant 
     
     d = enchant.Dict("en_US")
     
