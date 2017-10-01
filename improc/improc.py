@@ -109,6 +109,8 @@ def convertImageToJSON(filepath):
         y += h/2
         cx = line[4]
         cy = line[5]
+        l1_start = []
+        l1_end = []
         # Determine start node and end node
         if w > h:
             # The arrow points is horizontal
@@ -125,9 +127,9 @@ def convertImageToJSON(filepath):
                 start = x + (w/2)
                 endFace = Face.left
                 end = x - (w/2)
-            node_pos = []
             for node in nodes:
-                node_pos.append(node.pos[0])
+                l1_start.append(abs(start - node.pos[0]) + abs(y - node.pos[1]))
+                l1_end.append(abs(end - node.pos[0]) + abs(y - node.pos[1]))
         else:
             # The arrow is vertical
             length = h
@@ -143,13 +145,14 @@ def convertImageToJSON(filepath):
                 start = y + (h/2)
                 endFace = Face.bottom
                 end = y - (h/2)
-            node_pos = []
             for node in nodes:
-                node_pos.append(node.pos[1])
+                l1_start.append(abs(start - node.pos[1]) + abs(x - node.pos[0]))
+                l1_end.append(abs(end - node.pos[1]) + abs(x - node.pos[0]))
         # Find shortest distances
-        print(node_pos)
-        print(start)
-        print(end)
+        startnode = nodes[np.argmin(l1_start)]
+        endnode = nodes[np.argmin(l1_end)]
+        # creat line and append
+        lines.append(Line(startnode, startFace, endnode, endFace))
     # Aggregate objects
     flowchart = { "nodes":nodes, "lines":lines}
     # Convert to JSON
