@@ -59,8 +59,8 @@ def ocr(image):
 
     if not text:
         return "ERROR"
-
-    return text
+    else:
+        return text
 
 if __name__ == '__main__':
     image = Image.open('../tests/text_imgs/7.png')
