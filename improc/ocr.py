@@ -57,6 +57,9 @@ def ocr(image):
 
     text = cleanedwords
 
+    if not text:
+        return "ERROR"
+
     return text
 
 if __name__ == '__main__':
