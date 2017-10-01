@@ -113,23 +113,23 @@ def convertImageToJSON(filepath):
             length = w
             if cx > x:
                 # Arrow head is on the right
-                startFace = Face(left)
-                endFace = Face(right)
+                startFace = Face.left
+                endFace = Face.right
             else:
                 # Arrow head is on the left
-                startFace = Face(right)
-                endFace = Face(left)
+                startFace = Face.right
+                endFace = Face.left
         else:
             # The arrow is vertical
             length = h
             if cy > y:
                 # Arrow points down
-                startFace = Face(bottom)
-                endFace = Face(top)
+                startFace = Face.bottom
+                endFace = Face.top
             else:
                 # Arrow points up
-                startFace = Face(top)
-                endFace = Face(bottom)
+                startFace = Face.top
+                endFace = Face.bottom
         # Determine which is the arrowhead end
         l1 = np.infty
 
