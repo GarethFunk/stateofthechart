@@ -9,8 +9,13 @@ import re
 #text = unidecode(pytesseract.image_to_string(Image.open('../tests/text_imgs/1.png')))
 
 #text = text.lower()
+
 def ocr(image):
-    text = unidecode("te st text".lower()) #test string
+    text = unidecode(pytesseract.image_to_string(image))
+
+    text = text.lower()
+
+    #text = unidecode("te st text".lower()) #test string
 
     text = re.sub("(^|\W)\d+($|\W)", " ", text) #removes numbers from the string
 
@@ -54,7 +59,12 @@ def ocr(image):
                     cleanedwords.append(words[i])
     '''
 
-    print(cleanedwords)
-text =
+    text = cleanedwords
 
-return text
+    return text
+
+if __name__ == '__main__':
+    image = Image.open('../tests/text_imgs/1.png')
+
+text = ocr(image)
+print(text)
