@@ -121,15 +121,34 @@ def convertImageToJSON(filepath):
                 start = x - (w/2)
                 endFace = Face.left
                 end = x + (w/2)
+                for node in nodes:
+                    # Start node must be to the left of start
+                    dist = start - node.pos[0] # should be +ve
+                    if dist < 0:
+                        dist = 100000000
+                    l1_start.append(dist + abs(y - node.pos[1]))
+                    # End node must be to the right of end
+                    dist = node.pos[0] - end # should be +ve
+                    if dist < 0:
+                        dist = 100000000
+                    l1_end.append(dist + abs(y - node.pos[1]))
             else:
                 # Arrow head is on the left
                 startFace = Face.left
                 start = x + (w/2)
                 endFace = Face.right
                 end = x - (w/2)
-            for node in nodes:
-                l1_start.append(abs(start - node.pos[0]) + abs(y - node.pos[1]))
-                l1_end.append(abs(end - node.pos[0]) + abs(y - node.pos[1]))
+                for node in nodes:
+                    # Start node must be to the right of start
+                    dist = node.pos[0] - start # should be +ve
+                    if dist < 0:
+                        dist = 100000000
+                    l1_start.append(dist + abs(y - node.pos[1]))
+                    # End node must be to the left of end
+                    dist = end - node.pos[0]# should be +ve
+                    if dist < 0:
+                        dist = 100000000
+                    l1_end.append(dist + abs(y - node.pos[1]))
         else:
             # The arrow is vertical
             length = h
@@ -139,19 +158,41 @@ def convertImageToJSON(filepath):
                 start = y - (h/2)
                 endFace = Face.top
                 end = y + (h/2)
+                for node in nodes:
+                    # Start node must be above of start
+                    dist = node.pos[1] - start # should be +ve
+                    if dist < 0:
+                        dist = 100000000
+                    l1_start.append(dist + abs(y - node.pos[0]))
+                    # End node must be below end
+                    dist = end - node.pos[1] # should be +ve
+                    if dist < 0:
+                        dist = 100000000
+                    l1_end.append(dist + abs(y - node.pos[0]))
             else:
                 # Arrow points up
                 startFace = Face.top
                 start = y + (h/2)
                 endFace = Face.bottom
                 end = y - (h/2)
+                for node in nodes:
+                    # Start node must be below start
+                    dist = start - node.pos[1] # should be +ve
+                    if dist < 0:
+                        dist = 100000000
+                    l1_start.append(dist + abs(y - node.pos[1]))
+                    # End node must be above of end
+                    dist = node.pos[1] - end # should be +ve
+                    if dist < 0:
+                        dist = 100000000
+                    l1_end.append(dist + abs(y - node.pos[1]))
             for node in nodes:
                 l1_start.append(abs(start - node.pos[1]) + abs(x - node.pos[0]))
                 l1_end.append(abs(end - node.pos[1]) + abs(x - node.pos[0]))
         # Find shortest distances
         startnode = nodes[np.argmin(l1_start)]
         endnode = nodes[np.argmin(l1_end)]
-        # creat line and append
+        # create line and append
         lines.append(Line(startnode, startFace, endnode, endFace))
     # Aggregate objects
     flowchart = { "nodes":nodes, "lines":lines}
