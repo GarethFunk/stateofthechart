@@ -101,14 +101,6 @@ def ocr(image):
         return "UNABLE TO READ"
     else:
         return cleanedwords
-        '''
-        if len(cleanedwords) == 1:
-            if cleanedwords in eng_dict:
-                return cleanedwords
-            else:
-                spellchecked = correction(cleanedwords)
-            return spellchecked
-            '''
 
 
 if __name__ == '__main__':
