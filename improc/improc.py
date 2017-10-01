@@ -190,9 +190,13 @@ def convertImageToJSON(filepath):
         if(startFace == Face.top or startFace == Face.bottom):
             startpos = x - (startnode.pos[0] - (startnode.size[0]/2))
             endpos = x - (endnode.pos[0] - (endnode.size[0]/2))
+            print(str(startnode.size[0]) + " pos: " + str(startpos))
+            print(str(endnode.size[0]) + " pos: " + str(endpos))
         else:
             startpos = y - (startnode.pos[1] - (startnode.size[1] / 2))
             endpos = y - (endnode.pos[1] - (endnode.size[1] / 2))
+            print(str(startnode.size[1]) + " pos: " + str(startpos))
+            print(str(endnode.size[1]) + " pos: " + str(endpos))
         # create line and append
         lines.append(Line(startnode, startFace, endnode, endFace, startpos, endpos))
     # Aggregate objects
