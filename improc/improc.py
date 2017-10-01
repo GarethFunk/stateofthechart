@@ -187,8 +187,14 @@ def convertImageToJSON(filepath):
         # Find shortest distances
         startnode = nodes[np.argmin(l1_start)]
         endnode = nodes[np.argmin(l1_end)]
+        if(startFace == Face.top or startFace == Face.bottom):
+            startpos = x - (startnode.pos[0] - (startnode.size[0]/2))
+            endpos = x - (endnode.pos[0] - (endnode.size[0]/2))
+        else:
+            startpos = y - (startnode.pos[1] - (startnode.size[1] / 2))
+            endpos = y - (endnode.pos[1] - (endnode.size[1] / 2))
         # create line and append
-        lines.append(Line(startnode, startFace, endnode, endFace))
+        lines.append(Line(startnode, startFace, endnode, endFace, startpos, endpos))
     # Aggregate objects
     flowchart = { "nodes":nodes, "lines":lines}
     # Convert to JSON
