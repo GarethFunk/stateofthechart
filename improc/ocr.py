@@ -4,9 +4,7 @@ except ImportError:
     from PIL import Image
 import pytesseract
 from unidecode import unidecode
-import re
 from string import digits
-import string
 
 #reads a text file of words and returns a list of all the words
 def read_words(words_file):
@@ -60,12 +58,10 @@ def ocr(image):
                     cleanedwords.append(words[i])
     '''
 
-    text = cleanedwords
-
-    if not text:
+    if not cleanedwords:
         return "UNABLE TO READ"
     else:
-        return text
+        return cleanedwords
 
 if __name__ == '__main__':
     image = Image.open('../tests/flowchart_images/take2.png')
