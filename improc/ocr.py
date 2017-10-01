@@ -6,10 +6,6 @@ import pytesseract
 from unidecode import unidecode
 import re
 
-#text = unidecode(pytesseract.image_to_string(Image.open('../tests/text_imgs/1.png')))
-
-#text = text.lower()
-
 def ocr(image):
     text = unidecode(pytesseract.image_to_string(image))
 
@@ -64,7 +60,7 @@ def ocr(image):
     return text
 
 if __name__ == '__main__':
-    image = Image.open('../tests/text_imgs/1.png')
+    image = Image.open('../tests/text_imgs/7.png')
 
 text = ocr(image)
 print(text)
