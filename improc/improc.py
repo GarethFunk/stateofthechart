@@ -117,15 +117,15 @@ def convertImageToJSON(filepath):
             length = w
             if cx > x:
                 # Arrow head is on the right
-                startFace = Face.left
+                startFace = Face.right
                 start = x - (w/2)
-                endFace = Face.right
+                endFace = Face.left
                 end = x + (w/2)
             else:
                 # Arrow head is on the left
-                startFace = Face.right
+                startFace = Face.left
                 start = x + (w/2)
-                endFace = Face.left
+                endFace = Face.right
                 end = x - (w/2)
             for node in nodes:
                 l1_start.append(abs(start - node.pos[0]) + abs(y - node.pos[1]))

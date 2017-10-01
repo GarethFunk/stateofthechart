@@ -17,16 +17,18 @@ function getNode(id, nodes) {
     return out;
 }
 
-function drawCrap(crap) {
+function drawCrap(crap, server) {
 
     $("#whiteboard").show();
     $("#whiteboardBtn img").attr('src', '/static/img/closeWhiteboard.png');
     $("#wbCanvas").attr("width", $("#wbCanvas").outerWidth() * 2);
     $("#wbCanvas").attr("height", $("#wbCanvas").outerHeight() * 2);
     var canvas = new fabric.Canvas('wbCanvas');
-    canvas.on("after:render", function(opt){ shareCanvas(canvas.toObject()); });
+    if (server) {
+        canvas.on("after:render", function(opt){ shareCanvas(canvas.toObject()); });
+    }
 
-    var sf = 6;
+    var sf = 0.3;
 
     $.each(crap.lines, function(i) {
         var line = crap.lines[i];
@@ -113,9 +115,44 @@ function drawCrap(crap) {
     });
 }
 
+var tCan = "non";
+
+function drawNice(diagram) {
+
+    if (tCan === "non") {
+
+        $("#whiteboard").show();
+        $("#whiteboardBtn img").attr('src', '/static/img/closeWhiteboard.png');
+        $("#wbCanvas").attr("width", $("#wbCanvas").outerWidth() * 2);
+        $("#wbCanvas").attr("height", $("#wbCanvas").outerHeight() * 2);
+        tCan = new fabric.Canvas('wbCanvas');
+
+    }
+    tCan.loadFromJSON(diagram);
+}
+
 function shareCanvas(canvas) {
-    //canvas.loadFromJSON("{\"version\":\"2.0.0-beta7\",\"objects\":[{\"type\":\"line\",\"version\":\"2.0.0-beta7\",\"originX\":\"left\",\"originY\":\"top\",\"left\":300,\"top\":90,\"width\":0,\"height\":180,\"fill\":\"black\",\"stroke\":\"black\",\"strokeWidth\":3,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeLineJoin\":\"miter\",\"strokeMiterLimit\":10,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"clipTo\":null,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"globalCompositeOperation\":\"source-over\",\"transformMatrix\":null,\"skewX\":0,\"skewY\":0,\"x1\":0,\"x2\":0,\"y1\":-90,\"y2\":90},{\"type\":\"rect\",\"version\":\"2.0.0-beta7\",\"originX\":\"left\",\"originY\":\"top\",\"left\":240,\"top\":30,\"width\":120,\"height\":60,\"fill\":\"rgba(0,0,0,0)\",\"stroke\":\"black\",\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeLineJoin\":\"miter\",\"strokeMiterLimit\":10,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"clipTo\":null,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"globalCompositeOperation\":\"source-over\",\"transformMatrix\":null,\"skewX\":0,\"skewY\":0,\"rx\":0,\"ry\":0},{\"type\":\"text\",\"version\":\"2.0.0-beta7\",\"originX\":\"center\",\"originY\":\"center\",\"left\":300,\"top\":60,\"width\":46.66,\"height\":27.12,\"fill\":\"rgb(0,0,0)\",\"stroke\":null,\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeLineJoin\":\"miter\",\"strokeMiterLimit\":10,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"clipTo\":null,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"globalCompositeOperation\":\"source-over\",\"transformMatrix\":null,\"skewX\":0,\"skewY\":0,\"text\":\"start\",\"fontSize\":24,\"fontWeight\":\"normal\",\"fontFamily\":\"sans-serif\",\"fontStyle\":\"normal\",\"lineHeight\":1.16,\"underline\":false,\"overline\":false,\"linethrough\":false,\"textAlign\":\"center\",\"textBackgroundColor\":\"\",\"charSpacing\":0,\"styles\":{}},{\"type\":\"rect\",\"version\":\"2.0.0-beta7\",\"originX\":\"left\",\"originY\":\"top\",\"left\":225,\"top\":270,\"width\":150,\"height\":60,\"fill\":\"rgba(0,0,0,0)\",\"stroke\":\"black\",\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeLineJoin\":\"miter\",\"strokeMiterLimit\":10,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"clipTo\":null,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"globalCompositeOperation\":\"source-over\",\"transformMatrix\":null,\"skewX\":0,\"skewY\":0,\"rx\":0,\"ry\":0},{\"type\":\"text\",\"version\":\"2.0.0-beta7\",\"originX\":\"center\",\"originY\":\"center\",\"left\":300,\"top\":300,\"width\":70.7,\"height\":27.12,\"fill\":\"rgb(0,0,0)\",\"stroke\":null,\"strokeWidth\":1,\"strokeDashArray\":null,\"strokeLineCap\":\"butt\",\"strokeLineJoin\":\"miter\",\"strokeMiterLimit\":10,\"scaleX\":1,\"scaleY\":1,\"angle\":0,\"flipX\":false,\"flipY\":false,\"opacity\":1,\"shadow\":null,\"visible\":true,\"clipTo\":null,\"backgroundColor\":\"\",\"fillRule\":\"nonzero\",\"globalCompositeOperation\":\"source-over\",\"transformMatrix\":null,\"skewX\":0,\"skewY\":0,\"text\":\"do shit\",\"fontSize\":24,\"fontWeight\":\"normal\",\"fontFamily\":\"sans-serif\",\"fontStyle\":\"normal\",\"lineHeight\":1.16,\"underline\":false,\"overline\":false,\"linethrough\":false,\"textAlign\":\"center\",\"textBackgroundColor\":\"\",\"charSpacing\":0,\"styles\":{}}]}");
-    console.log(canvas);
+        $.ajax({
+          url: "/setdiagram",
+          type: "POST",
+          data: {
+            data: JSON.stringify(canvas)
+          }
+        });
+}
+
+var serving = false;
+
+function pollForChanges() {
+    if (!serving) {
+        $.ajax({
+          url: "/getdiagram"
+        }).done(function(diagram) {
+            if(diagram !== "none" && !serving) {
+                drawNice(JSON.parse(diagram));
+            }
+        });
+    }
 }
 
 function sendChart() {
@@ -133,7 +170,8 @@ function sendChart() {
         data: thecanvas[0].toDataURL()
       }
     }).done(function(diagram) {
-      drawCrap(JSON.parse(diagram));
+      drawCrap(JSON.parse(diagram), true);
+      serving = true;
     });
 }
 

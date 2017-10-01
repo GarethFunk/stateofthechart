@@ -9,9 +9,9 @@ import hmac
 from flask import Flask, render_template, request
 
 from improc.improc import convertImageToJSON
-
 app = Flask(__name__)
 
+diagram = "none"
 
 class Token:
     def __init__(self, key, appID, userName, vCardFile, expires):
@@ -77,6 +77,20 @@ def make_diagram():
     file.close()
 
     return convertImageToJSON(file_path)
+
+
+@app.route('/setdiagram', methods=['POST'])
+def set_diagram():
+    global diagram
+    diagram = request.form['data']
+    return "done"
+
+
+@app.route('/getdiagram')
+def get_diagram():
+    global diagram
+    return diagram
+
 
 
 app.run(debug=False, host='0.0.0.0', port='5000')
