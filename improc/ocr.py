@@ -27,7 +27,7 @@ def ocr(image):
     l = len(words)
     marker = []
 
-    eng_dict = read_words('../tests/words/google-10000-english-no-swears.txt')
+    eng_dict = read_words('./tests/words/google-10000-english-no-swears.txt')
 
     for i in range(l):
         if i not in marker:
