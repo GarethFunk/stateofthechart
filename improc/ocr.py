@@ -5,15 +5,18 @@ except ImportError:
 import pytesseract
 from unidecode import unidecode
 import re
+from string import digits
+import string
 
 def ocr(image):
     text = unidecode(pytesseract.image_to_string(image))
 
     text = text.lower()
+    text = text.replace("5", "s").replace("7", "t").replace("sm", "sta")
 
-    #text = unidecode("te st text".lower()) #test string
-
-    text = re.sub("(^|\W)\d+($|\W)", " ", text) #removes numbers from the string
+    #remove all numbers
+    remove_digits = str.maketrans('', '', digits)
+    text = text.translate(remove_digits)
 
     words = text.split()
 
@@ -24,7 +27,7 @@ def ocr(image):
     def read_words(words_file):
         return [word for line in open(words_file, 'r') for word in line.split()]
 
-    eng_dict = read_words('../tests/words/google-10000-english-no-swears.txt')[:5000]
+    eng_dict = read_words('../tests/words/google-10000-english-no-swears.txt')
 
     for i in range(l):
         if i not in marker:
@@ -58,12 +61,12 @@ def ocr(image):
     text = cleanedwords
 
     if not text:
-        return "ERROR"
+        return "UNABLE TO READ"
     else:
         return text
 
 if __name__ == '__main__':
-    image = Image.open('../tests/text_imgs/7.png')
+    image = Image.open('../tests/flowchart_images/two_boxes.png')
 
     text = ocr(image)
     print(text)
