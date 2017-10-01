@@ -158,12 +158,12 @@ def convertImageToJSON(filepath):
                 end = y + (h/2)
                 for node in nodes:
                     # Start node must be above of start
-                    dist = node.pos[1] - start # should be +ve
+                    dist = start - node.pos[1] # should be +ve
                     if dist < 0:
                         dist = 100000000
                     l1_start.append(dist + abs(y - node.pos[0]))
                     # End node must be below end
-                    dist = end - node.pos[1] # should be +ve
+                    dist = node.pos[1] - end # should be +ve
                     if dist < 0:
                         dist = 100000000
                     l1_end.append(dist + abs(y - node.pos[0]))
@@ -175,12 +175,12 @@ def convertImageToJSON(filepath):
                 end = y - (h/2)
                 for node in nodes:
                     # Start node must be below start
-                    dist = start - node.pos[1] # should be +ve
+                    dist = node.pos[1] - start# should be +ve
                     if dist < 0:
                         dist = 100000000
                     l1_start.append(dist + abs(y - node.pos[1]))
                     # End node must be above of end
-                    dist = node.pos[1] - end # should be +ve
+                    dist = end - node.pos[1]# should be +ve
                     if dist < 0:
                         dist = 100000000
                     l1_end.append(dist + abs(y - node.pos[1]))
