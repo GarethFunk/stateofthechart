@@ -2,6 +2,7 @@ import json
 
 import cv2
 import numpy as np
+from PIL import Image
 
 if __name__ == '__main__':
     cv2.destroyAllWindows()
@@ -10,12 +11,14 @@ if __name__ == '__main__':
     from flowchart.line import Line
     from flowchart.node import Node
     from flowchart.fcEncoder import fcEncoder
+    from ocr import ocr
 else:
     from .flowchart.small_classes import Face
     from .flowchart.small_classes import Shape
     from .flowchart.line import Line
     from .flowchart.node import Node
     from .flowchart.fcEncoder import fcEncoder
+    from .ocr import ocr
 
 def convertImageToJSON(filepath):
     ip = cv2.imread(filepath)
@@ -33,15 +36,10 @@ def convertImageToJSON(filepath):
     kernel = np.ones((5, 5), np.uint8)
     th3 = cv2.erode(th3, kernel, iterations=1)
     th3 = cv2.dilate(th3, kernel, iterations = 1)
-    cv2.imshow("Binarised", th3)
-    cv2.waitKey(10)
     # Extract shape data
     edges = cv2.Canny(th3, 100, 200)
-    cv2.imshow("edges", edges)
-    cv2.waitKey(10)
     im2, contours, hierarchy = cv2.findContours(th3, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     cv2.drawContours(ip, contours, -1, (0, 255, 0), 1)
-
     # Extract text subimages and process
     # Neglect first hierarchy, go to first child of outer contour
     print(hierarchy)
@@ -73,10 +71,6 @@ def convertImageToJSON(filepath):
             arrows_conts.append([x, y, w, h])
             cv2.drawContours(ip, contour, -1, (0, 255, 255), 1)
     # Now we have distinguished between arrows and rectangles
-    print(rect_conts)
-    print(arrows_conts)
-    cv2.imshow("contours", ip)
-    cv2.waitKey(1000)
     # Create objects
     nodes = []
     for rect in rect_conts:
@@ -85,18 +79,30 @@ def convertImageToJSON(filepath):
         y = rect[1]
         w = rect[2]
         h = rect[3]
-        ocr_input = th3[y:y+h, x:x+w]
-
-        nodes.append(Node(Shape.rectangle, (x, y), (w, h), "test"))
-    nodes.append(Node(Shape.terminus, (50, 10), (20, 10), "start"))
-    nodes.append(Node(Shape.rectangle, (50,50), (25, 10), "do shit"))
+        d = 0.10 #indent
+        ocr_input = th3[int(y+(h*d)):int(y+(h*(1-d))), int(x+(d*w)):int(x+(w*(1-d)))]
+        ocr_input = cv2.cvtColor(ocr_input, cv2.COLOR_GRAY2RGB)
+        ocr_input = Image.fromarray(ocr_input)
+        text = ocr(ocr_input)
+        if len(text) == 0:
+            text = ""
+        else:
+            text = text[0]
+        print(text)
+        nodes.append(Node(Shape.rectangle, (x+(w/2), y+(h/2)), (w, h), text))
     lines = []
     lines.append(Line(nodes[0], Face.bottom, nodes[1], Face.top, text="YeSsIr"))
     # Aggregate objects
     flowchart = { "nodes":nodes, "lines":lines}
     # Convert to JSON
     output = json.dumps(flowchart, cls=fcEncoder)
-
+    if __name__ == '__main__':
+        cv2.imshow("Binarised", th3)
+        cv2.waitKey(10)
+        cv2.imshow("edges", edges)
+        cv2.waitKey(10)
+        cv2.imshow("contours", ip)
+        cv2.waitKey(10)
     return output
 
 
